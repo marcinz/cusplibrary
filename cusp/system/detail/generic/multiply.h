@@ -114,6 +114,21 @@ void generalized_spgemm(thrust::execution_policy<DerivedPolicy> &exec,
                         BinaryFunction2 reduce);
 
 template <typename DerivedPolicy,
+          typename MatrixType1,
+          typename MatrixType2,
+          typename MatrixType3,
+          typename BinaryFunction1,
+          typename BinaryFunction2,
+          typename BinaryFunction3>
+void generalized_multiply(thrust::execution_policy<DerivedPolicy>& exec,
+                          const MatrixType1& A,
+                          const MatrixType2& B,
+                          MatrixType3& C,
+                          BinaryFunction1 combine,
+                          BinaryFunction2 reduce,
+                          BinaryFunction3 accum);
+
+template <typename DerivedPolicy,
           typename LinearOperator,
           typename Vector1,
           typename Vector2,

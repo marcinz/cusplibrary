@@ -295,6 +295,91 @@ void generalized_spgemm(const LinearOperator&  A,
 /*! \cond */
 template <typename DerivedPolicy,
           typename LinearOperator,
+          typename MatrixOrVector1,
+          typename MatrixOrVector2,
+          typename BinaryFunction1,
+          typename BinaryFunction2,
+          typename BinaryFunction3>
+void generalized_multiply(const thrust::detail::execution_policy_base<DerivedPolicy> &exec,
+                          const LinearOperator&  A,
+                          const MatrixOrVector1& B,
+                                MatrixOrVector2& C,
+                          BinaryFunction1 combine,
+                          BinaryFunction2 reduce,
+                          BinaryFunction3 accum);
+/*! \endcond */
+
+/**
+ * \brief Implements generalized matrix-matrix multiplication
+ *
+ * \par Overview
+ *
+ * \p generalized multiply can be used with dense and sparse matrices, and user-defined
+ * \p linear_operator objects. 
+ *
+ * \tparam LinearOperator  Type of matrix
+ * \tparam MatrixOrVector1 Type of second matrix
+ * \tparam MatrixOrVector2 Type of output matrix
+ * \tparam BinaryFunction1 Type of binary function to combine entries
+ * \tparam BinaryFunction2 Type of binary function to reduce entries
+ * \tparam BinaryFunction3 Type of binary function to accumulate entries
+ *
+ * \param A first input matrix
+ * \param B second input matrix
+ * \param C output matrix
+ *
+ * \par Example
+ *
+ *  The following code snippet demonstrates how to use \p generalized_spgemm to
+ *  compute a matrix-matrix product.
+ *
+ *  \code
+ *  #include <cusp/coo_matrix.h>
+ *  #include <cusp/functional.h>
+ *  #include <cusp/multiply.h>
+ *  #include <cusp/print.h>
+ *
+ *  #include <cusp/gallery/poisson.h>
+ *
+ *  int main(void)
+ *  {
+ *      // define multiply functors
+ *      thrust::multiplies<float> combine;
+ *      thrust::plus<float>       reduce, accum;
+ *
+ *      // initialize matrix
+ *      cusp::coo_matrix<int,float,cusp::host_memory> A;
+ *      cusp::gallery::poisson5pt(A, 3, 3);
+ *
+ *      // allocate output matrices and initialize output nonzeros
+ *      cusp::coo_matrix<int, float, cusp::host_memory> C(A);
+ *
+ *      // compute C += A * A
+ *      cusp::generalized_multiply(A, A, C, identity, combine, reduce, accum);
+ *
+ *      // print output matrices
+ *      cusp::print(C);
+ *
+ *      return 0;
+ *  }
+ *  \endcode
+ */
+template <typename LinearOperator,
+          typename MatrixOrVector1,
+          typename MatrixOrVector2,
+          typename BinaryFunction1,
+          typename BinaryFunction2,
+          typename BinaryFunction3>
+void generalized_multiply(const LinearOperator&  A,
+                          const MatrixOrVector1& B,
+                                MatrixOrVector2& C,
+                          BinaryFunction1 combine,
+                          BinaryFunction2 reduce,
+                          BinaryFunction3 accum);
+
+/*! \cond */
+template <typename DerivedPolicy,
+          typename LinearOperator,
           typename Vector1,
           typename Vector2,
           typename Vector3,

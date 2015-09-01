@@ -23,6 +23,7 @@
 
 #include <cusp/system/detail/generic/multiply/generalized_spmv.h>
 #include <cusp/system/detail/generic/multiply/generalized_spgemm.h>
+#include <cusp/system/detail/generic/multiply/generalized_multiply.h>
 #include <cusp/system/detail/generic/multiply/permute.h>
 #include <cusp/system/detail/generic/multiply/spgemm.h>
 #include <cusp/system/detail/generic/multiply/spmv.h>
@@ -158,6 +159,35 @@ void generalized_spgemm(thrust::execution_policy<DerivedPolicy> &exec,
                        A, B, C,
                        initialize, combine, reduce,
                        format1, format2, format3);
+}
+
+template <typename DerivedPolicy,
+          typename LinearOperator,
+          typename MatrixOrVector1,
+          typename MatrixOrVector2,
+          typename BinaryFunction1,
+          typename BinaryFunction2,
+          typename BinaryFunction3>
+void generalized_multiply(thrust::execution_policy<DerivedPolicy> &exec,
+                          const LinearOperator&  A,
+                          const MatrixOrVector1& B,
+                                MatrixOrVector2& C,
+                          BinaryFunction1 combine,
+                          BinaryFunction2 reduce,
+                          BinaryFunction3 accum)
+{
+    typedef typename LinearOperator::format  Format1;
+    typedef typename MatrixOrVector1::format Format2;
+    typedef typename MatrixOrVector2::format Format3;
+
+    Format1 format1;
+    Format2 format2;
+    Format3 format3;
+
+    generalized_multiply(thrust::detail::derived_cast(thrust::detail::strip_const(exec)),
+                         A, B, C,
+                         combine, reduce, accum,
+                         format1, format2, format3);
 }
 
 template <typename DerivedPolicy,

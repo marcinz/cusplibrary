@@ -160,6 +160,54 @@ void generalized_spgemm(const LinearOperator&  A,
 }
 
 template <typename DerivedPolicy,
+          typename LinearOperator,
+          typename MatrixOrVector1,
+          typename MatrixOrVector2,
+          typename BinaryFunction1,
+          typename BinaryFunction2,
+          typename BinaryFunction3>
+void generalized_multiply(const thrust::detail::execution_policy_base<DerivedPolicy> &exec,
+                          const LinearOperator&  A,
+                          const MatrixOrVector1& B,
+                                MatrixOrVector2& C,
+                          BinaryFunction1 combine,
+                          BinaryFunction2 reduce,
+                          BinaryFunction3 accum)
+{
+    using cusp::system::detail::generic::generalized_multiply;
+
+    generalized_multiply(thrust::detail::derived_cast(thrust::detail::strip_const(exec)),
+                         A, B, C, combine, reduce, accum);
+}
+
+template <typename LinearOperator,
+          typename MatrixOrVector1,
+          typename MatrixOrVector2,
+          typename BinaryFunction1,
+          typename BinaryFunction2,
+          typename BinaryFunction3>
+void generalized_multiply(const LinearOperator&  A,
+                          const MatrixOrVector1& B,
+                                MatrixOrVector2& C,
+                          BinaryFunction1 combine,
+                          BinaryFunction2 reduce,
+                          BinaryFunction3 accum)
+{
+    using thrust::system::detail::generic::select_system;
+
+    typedef typename LinearOperator::memory_space  System1;
+    typedef typename MatrixOrVector1::memory_space System2;
+    typedef typename MatrixOrVector2::memory_space System3;
+
+    System1 system1;
+    System2 system2;
+    System3 system3;
+
+    cusp::generalized_multiply(select_system(system1,system2,system3), A, B, C,
+                               combine, reduce, accum);
+}
+
+template <typename DerivedPolicy,
          typename LinearOperator,
          typename Vector1,
          typename Vector2,

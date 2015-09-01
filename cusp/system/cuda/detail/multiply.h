@@ -31,6 +31,7 @@
 // #include <cusp/system/cuda/detail/multiply/hyb_spmv.h>
 
 #include <cusp/system/cuda/detail/multiply/spgemm.h>
+#include <cusp/system/cuda/detail/multiply/generalized_multiply.h>
 
 namespace cusp
 {

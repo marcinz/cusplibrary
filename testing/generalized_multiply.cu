@@ -134,8 +134,7 @@ void TestGeneralizedMultSparseMatrixMatrixMultiply(void)
 }
 DECLARE_SPARSE_MATRIX_UNITTEST(TestGeneralizedMultSparseMatrixMatrixMultiply);
 
-template <typename DerivedPolicy,
-          typename LinearOperator,
+template <typename LinearOperator,
           typename MatrixOrVector1,
           typename MatrixOrVector2,
           typename BinaryFunction1,
